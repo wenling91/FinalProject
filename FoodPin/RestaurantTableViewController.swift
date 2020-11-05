@@ -146,7 +146,6 @@ class RestaurantTableViewController: UITableViewController {
             let defaultText = "Just checking in at " + self.restaurantNames[indexPath.row]
 
             let activityController = UIActivityViewController(activityItems: [defaultText], applicationActivities: nil)
-
             self.present(activityController, animated: true, completion: nil)
             completionHandler(true)
         }
@@ -156,20 +155,35 @@ class RestaurantTableViewController: UITableViewController {
         
         // Set the icon and background color for the actions
         deleteAction.backgroundColor = UIColor(red: 231.0/255.0, green: 76.0/255.0, blue: 60.0/255.0, alpha: 1.0)
-        if #available(iOS 13.0, *) {
-            deleteAction.image = UIImage(systemName: "trash")
-        } else {
-            // Fallback on earlier versions
-        }
-
+        deleteAction.image = UIImage(systemName: "trash")
+        
+        
         shareAction.backgroundColor = UIColor(red: 254.0/255.0, green: 149.0/255.0, blue: 38.0/255.0, alpha: 1.0)
-        if #available(iOS 13.0, *) {
-            shareAction.image = UIImage(systemName: "square.and.arrow.up")
-        } else {
-            // Fallback on earlier versions
-        }
-
+        shareAction.image = UIImage(systemName: "square.and.arrow.up")
+        
         return swipeConfiguration
+    }
+    
+    
+    override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+            
+    let checkInAction = UIContextualAction(style: .normal, title: "Check-in") { (action, sourceView, completionHandler) in
+                
+    let cell = tableView.cellForRow(at: indexPath) as! RestaurantTableViewCell
+    self.restaurantIsVisited[indexPath.row] = (self.restaurantIsVisited[indexPath.row]) ? false : true
+    cell.accessoryType = self.restaurantIsVisited[indexPath.row] ? .checkmark : .none
+                
+    completionHandler(true)
+    }
+            
+    let checkInIcon = restaurantIsVisited[indexPath.row] ? "arrow.uturn.left" : "checkmark"
+    checkInAction.backgroundColor = UIColor(red: 38.0/255.0, green: 162.0/255.0, blue: 78.0/255.0, alpha: 1.0)
+    checkInAction.image = UIImage(systemName: checkInIcon)
+            
+    let swipeConfiguration = UISwipeActionsConfiguration(actions: [checkInAction])
+          
+            
+    return swipeConfiguration
     }
     
     
