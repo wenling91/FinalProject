@@ -13,6 +13,8 @@ class RestaurantTableViewController: UITableViewController {
     var restaurants: [Restaurant] = []
     
     
+    // MARK: - Table view lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         Restaurant.generateData(sourceArray: &restaurants)
@@ -58,7 +60,7 @@ class RestaurantTableViewController: UITableViewController {
     }
     
 
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+ //   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
 //        // Create an option menu as an action sheet
 //        let optionMenu = UIAlertController(title: nil, message: "What do you want to do?", preferredStyle: .actionSheet)
@@ -115,7 +117,7 @@ class RestaurantTableViewController: UITableViewController {
 //        tableView.deselectRow(at: indexPath, animated: false)
         
         
-    }
+ //   }
     
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -173,6 +175,8 @@ class RestaurantTableViewController: UITableViewController {
             
     return swipeConfiguration
     }
+    
+    // MARK: - Navigation
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
       if segue.identifier == "showRestaurantDetail" {
