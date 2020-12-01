@@ -10,6 +10,13 @@ import UIKit
 
 class RestaurantDetailViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
+    @IBOutlet var tableView: UITableView!
+    @IBOutlet var headerView: RestaurantDetailHeaderView!
+    
+    var restaurant = Restaurant()
+
+    
+    // MARK: - Table view data source
     func numberOfSections(in tableView: UITableView) -> Int {
         1
     }
@@ -47,12 +54,7 @@ class RestaurantDetailViewController: UIViewController, UITableViewDataSource, U
     }
     
     
-    @IBOutlet var tableView: UITableView!
-    @IBOutlet var headerView: RestaurantDetailHeaderView!
-    
-    var restaurant = Restaurant()
-
-
+    // MARK: - Table view lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -66,7 +68,6 @@ class RestaurantDetailViewController: UIViewController, UITableViewDataSource, U
 
         tableView.delegate = self
         tableView.dataSource = self
-        
     }
     
 
