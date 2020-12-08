@@ -331,7 +331,7 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="2Sa-xC-o4Q">
-                        <barButtonItem key="rightBarButtonItem" title="Item" image="direction" id="LYy-vd-0xZ">
+                        <barButtonItem key="rightBarButtonItem" title="Item" image="paperplane.fill" catalog="system" id="LYy-vd-0xZ">
                             <connections>
                                 <action selector="showDirection:" destination="X9K-2f-6Dm" id="Jir-zm-A9v"/>
                             </connections>
@@ -365,7 +365,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="direction" width="40" height="40"/>
+        <image name="paperplane.fill" catalog="system" width="128" height="118"/>
         <systemColor name="secondarySystemGroupedBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

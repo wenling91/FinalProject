@@ -110,8 +110,9 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     
     @IBAction func showDirection(_ sender: Any) {
         
-        //reguest the current location
-        locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        //get the current location
+        //locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
         locationManager.requestLocation()  //request once
     
         guard let currentPlacemark = currentPlacemark,
@@ -159,7 +160,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.last {
+        if let location = locations.first {
             //translate the cooridinate to the address
             CLGeocoder().reverseGeocodeLocation(location) { places, _ in
                 if let firstPlace = places?.first {
