@@ -79,6 +79,7 @@ class RestaurantDetailViewController: UIViewController, UITableViewDataSource, U
         headerView.typeLabel.text = restaurant.type
         headerView.headerImageView.image = UIImage(named: restaurant.image)
         headerView.heartImageView.isHidden = (restaurant.isVisited) ? false : true
+        headerView.ratingImageView.image = UIImage(named: restaurant.rating)
 
         tableView.delegate = self
         tableView.dataSource = self
@@ -89,7 +90,25 @@ class RestaurantDetailViewController: UIViewController, UITableViewDataSource, U
             let destinationController = segue.destination as! MapViewController
             destinationController.restaurant = restaurant
         }
+        else if segue.identifier == "showReview" {
+            let destinationController = segue.destination as! ReviewViewController
+            destinationController.restaurant = restaurant
+        }
     }
+    
+    @IBAction func close(segue: UIStoryboardSegue) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func rateRestaurant(segue: UIStoryboardSegue) {
+        if let rating = segue.identifier {
+            self.restaurant.rating = rating
+            self.headerView.ratingImageView.image = UIImage(named: rating)
+        }
+
+    dismiss(animated: true, completion: nil)
+    }
+
     
 
 }

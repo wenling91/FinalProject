@@ -16,6 +16,7 @@ class Restaurant {
     var description: String
     var image: String
     var isVisited: Bool
+    var rating: String = ""
     
     init(name: String, type: String, location: String, phone: String, description: String, image: String, isVisited: Bool) {
         self.name = name
