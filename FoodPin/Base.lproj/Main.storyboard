@@ -405,10 +405,9 @@
                                 <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="act-fR-2Tb">
-                                <rect key="frame" x="382" y="44" width="16" height="36"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="30"/>
+                                <rect key="frame" x="365" y="44" width="33" height="32"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <state key="normal" image="close">
+                                <state key="normal" image="cross">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
@@ -760,8 +759,8 @@
     </scenes>
     <resources>
         <image name="angry" width="78" height="103"/>
-        <image name="close" width="16" height="16"/>
         <image name="cool" width="78" height="83"/>
+        <image name="cross" width="33" height="32"/>
         <image name="happy" width="78" height="86"/>
         <image name="love" width="78" height="82"/>
         <image name="photo" catalog="system" width="128" height="93"/>
