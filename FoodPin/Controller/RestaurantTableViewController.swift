@@ -17,7 +17,11 @@ class RestaurantTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        Restaurant.generateData(sourceArray: &restaurants)
+        
+        loadRestaurants()
+        if restaurants.isEmpty {
+            Restaurant.generateData(sourceArray: &restaurants)
+        }
 
         navigationController?.navigationBar.prefersLargeTitles = true
         
@@ -185,9 +189,62 @@ class RestaurantTableViewController: UITableViewController {
             destinationController.restaurant = restaurants[indexPath.row]
         }
       }
+      else if segue.identifier == "addRestaurant" {
+        let destinationController = segue.destination as! UINavigationController
+        let topView = destinationController.topViewController as! NewRestaurantController
+        topView.addDelegate = self
+        }
+    }
+
+
+    @IBAction func unwindToHome(segue: UIStoryboardSegue) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    
+    // MARK: - Data saving to the file
+      
+    func documentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0]
+    }
+    
+    func dataFilePath() -> URL {
+        return documentsDirectory().appendingPathComponent("Restaurants.plist")
     }
 
     
+    func saveRestaurants() {
+        let encoder = PropertyListEncoder()
+        do {
+            let data = try encoder.encode(restaurants)
+            try data.write(to: dataFilePath(), options: Data.WritingOptions.atomic)
+        } catch {
+            print("Error encoding restaurant array: \(error.localizedDescription)")
+        }
+    }
+    
+    func loadRestaurants() {
+        let path = dataFilePath()
+        if let data = try? Data(contentsOf: path) {
+            let decoder = PropertyListDecoder()
+            do {
+                restaurants = try decoder.decode([Restaurant].self, from: data)
+            } catch {
+                print("Error decoding restaurant array: \(error.localizedDescription)")
+            }
+        }
+    }
+    
     
 
+}
+
+
+extension RestaurantTableViewController: AddDataDelegate {
+    func addRestaurant(item: Restaurant) {
+        restaurants.append(item)
+        let tableView = view as! UITableView
+        tableView.insertRows(at: [IndexPath(row: restaurants.count-1, section: 0)], with: .automatic)
+    }
 }
