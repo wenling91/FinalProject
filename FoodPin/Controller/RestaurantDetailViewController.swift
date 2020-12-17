@@ -29,14 +29,16 @@ class RestaurantDetailViewController: UIViewController, UITableViewDataSource, U
                     
         case 0:
         let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: RestaurantDetailIconTextCell.self), for: indexPath) as! RestaurantDetailIconTextCell
-        cell.iconImageView.image = UIImage(systemName: "phone")?.withTintColor(.black, renderingMode: .alwaysOriginal)
+//        cell.iconImageView.image = UIImage(systemName: "phone")?.withTintColor(.black, renderingMode: .alwaysOriginal)
+        cell.iconImageView.image = UIImage(named: "phone")
         cell.shortTextLabel.text = restaurant.phone
         cell.selectionStyle = .none
                     
         return cell
         case 1:
         let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: RestaurantDetailIconTextCell.self), for: indexPath) as! RestaurantDetailIconTextCell
-        cell.iconImageView.image = UIImage(systemName: "map")?.withTintColor(.black, renderingMode: .alwaysOriginal)
+//        cell.iconImageView.image = UIImage(systemName: "map")?.withTintColor(.black, renderingMode: .alwaysOriginal)
+        cell.iconImageView.image = UIImage(named: "map")
         cell.shortTextLabel.text = restaurant.location
         cell.selectionStyle = .none
                     
