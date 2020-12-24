@@ -61,12 +61,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func saveData() {
-        let navigationController = window!.rootViewController as! UINavigationController
-        let controller = navigationController.viewControllers[0] as! RestaurantTableViewController
-        //or navigationController.topViewController
-        controller.saveRestaurants()
-    }
-
+           let tabBarController = window!.rootViewController as! UITabBarController
+           let navigationController = tabBarController.viewControllers?[0] as! UINavigationController
+           //let navigationController = window!.rootViewController as! UINavigationController
+           let controller = navigationController.viewControllers[0] as! RestaurantTableViewController
+           //or navigationController.topViewController
+           controller.saveRestaurants()
+       }
 
 }
 
