@@ -8,9 +8,13 @@
 
 import UIKit
 
-class RestaurantTableViewController: UITableViewController {
+class RestaurantTableViewController: UITableViewController, UISearchResultsUpdating {
 
     var restaurants: [Restaurant] = []
+    
+    var searchController: UISearchController!
+    
+    var searchResults: [Restaurant] = []
     
     
     // MARK: - Table view lifecycle
@@ -24,6 +28,14 @@ class RestaurantTableViewController: UITableViewController {
         }
 
         navigationController?.navigationBar.prefersLargeTitles = true
+       
+        searchController = UISearchController(searchResultsController: nil)
+        self.navigationItem.searchController = searchController
+        
+        searchController.searchResultsUpdater = self
+        //not change the color of the search contents
+        searchController.obscuresBackgroundDuringPresentation = false
+
         
     }
 
@@ -36,7 +48,11 @@ class RestaurantTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return restaurants.count
+        if searchController.isActive {
+            return searchResults.count
+        } else {
+            return restaurants.count
+        }
     }
 
     
@@ -46,12 +62,16 @@ class RestaurantTableViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! RestaurantTableViewCell
 
         // Configure the cell...
-        cell.nameLabel.text = restaurants[indexPath.row].name //optioinal chaining
-        cell.locationLabel.text = restaurants[indexPath.row].location
-        cell.typeLabel.text = restaurants[indexPath.row].type
-        cell.thumbnailImageView.image = UIImage(named: restaurants[indexPath.row].image)
+        // Determine if we get the restaurant from search result or the original array
+        let restaurant = (searchController.isActive) ? searchResults[indexPath.row] : restaurants[indexPath.row]
         
-        if restaurants[indexPath.row].isVisited {
+        
+        cell.nameLabel.text = restaurant.name //optioinal chaining
+        cell.locationLabel.text = restaurant.location
+        cell.typeLabel.text = restaurant.type
+        cell.thumbnailImageView.image = UIImage(named: restaurant.image)
+        
+        if restaurant.isVisited {
         cell.accessoryType = .checkmark
         } else {
         cell.accessoryType = .none
@@ -61,6 +81,14 @@ class RestaurantTableViewController: UITableViewController {
         
          
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        if searchController.isActive {
+            return false
+        } else {
+            return true
+        }
     }
     
 
@@ -190,7 +218,7 @@ class RestaurantTableViewController: UITableViewController {
       if segue.identifier == "showRestaurantDetail" {
         if let indexPath = tableView.indexPathForSelectedRow {
             let destinationController = segue.destination as! RestaurantDetailViewController
-            destinationController.restaurant = restaurants[indexPath.row]
+            destinationController.restaurant = (searchController.isActive) ? searchResults[indexPath.row] : restaurants[indexPath.row]
         }
       }
       else if segue.identifier == "addRestaurant" {
@@ -239,6 +267,26 @@ class RestaurantTableViewController: UITableViewController {
             }
         }
     }
+    
+    // MARK: - Search bar none core data version
+    
+    func filterContent(for searchText: String) {
+        
+        searchResults = restaurants.filter({ (restaurant) -> Bool in
+            let name = restaurant.name
+            let isMatch = name.localizedCaseInsensitiveContains(searchText)
+            
+            return isMatch
+        })
+    }
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        if let searchText = searchController.searchBar.text {
+            filterContent(for: searchText)
+            tableView.reloadData()
+        }
+    }
+
     
     
 
