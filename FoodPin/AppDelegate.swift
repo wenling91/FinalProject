@@ -27,7 +27,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-        saveData()
+        let os = ProcessInfo().operatingSystemVersion
+        if os.majorVersion <= 12 {
+            saveData()  //call when OS version is then 13
+        }
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -41,7 +44,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-        saveData()
+        let os = ProcessInfo().operatingSystemVersion
+        if os.majorVersion <= 12 {
+            saveData()  //call when OS version is then 13
+        }
     }
 
     // MARK: UISceneSession Lifecycle
