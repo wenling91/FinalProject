@@ -13,7 +13,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     
     @IBOutlet var mapView: MKMapView!
     
-    var restaurant = Restaurant()
+    var restaurant: RestaurantMO!
     
     let locationManager = CLLocationManager()
     var currentPlacemark: CLPlacemark?
@@ -21,8 +21,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     
     var currentTransportType = MKDirectionsTransportType.automobile
     var currentRoute: MKRoute?
-
-
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -42,7 +42,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         
         // Convert address to coordinate and annotate it on map
         let geoCoder = CLGeocoder()
-        geoCoder.geocodeAddressString(restaurant.location, completionHandler: { placemarks, error in
+        geoCoder.geocodeAddressString(restaurant.location ?? "", completionHandler: { placemarks, error in
             if let error = error {
                 print(error)
                 return
@@ -71,8 +71,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     }
     
     
-     // MARK: - Map View Delegate methods
-        
+    // MARK: - Map View Delegate methods
+    
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         let identifier = "MyMarker"
         
@@ -89,10 +89,12 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         }
         
         //annotationView?.glyphText = "😋"
-       // annotationView?.markerTintColor = UIColor.orange
+        // annotationView?.markerTintColor = UIColor.orange
         
         let leftIconView = UIImageView(frame: CGRect.init(x: 0, y: 0, width: 53, height: 53))
-        leftIconView.image = UIImage(named: restaurant.image)
+        if let restaurantImage = restaurant.image {
+            leftIconView.image = UIImage(data: restaurantImage as Data)
+        }
         annotationView?.leftCalloutAccessoryView = leftIconView
         
         return annotationView
@@ -114,7 +116,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         //locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
         locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
         locationManager.requestLocation()  //request once
-    
+        
         guard let currentPlacemark = currentPlacemark,
               let targetPlacemark = targetPlacemark else {
             return

@@ -13,8 +13,29 @@ class RestaurantDetailViewController: UIViewController, UITableViewDataSource, U
     @IBOutlet var tableView: UITableView!
     @IBOutlet var headerView: RestaurantDetailHeaderView!
     
-    var restaurant = Restaurant()
-
+    var restaurant: RestaurantMO!
+    
+    // MARK: - Table view lifecycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        navigationItem.largeTitleDisplayMode = .never
+        
+        // Configure header view
+        headerView.nameLabel.text = restaurant.name
+        headerView.typeLabel.text = restaurant.type
+        if let restaurantImage = restaurant.image {
+            headerView.headerImageView.image = UIImage(data: restaurantImage as Data)
+        }
+        headerView.heartImageView.isHidden = (restaurant.isVisited) ? false : true
+        if let rating =  restaurant.rating {
+            headerView.ratingImageView.image = UIImage(named: rating)
+        }
+        
+        tableView.delegate = self
+        tableView.dataSource = self
+    }
+    
     
     // MARK: - Table view data source
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -26,30 +47,30 @@ class RestaurantDetailViewController: UIViewController, UITableViewDataSource, U
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.row {
-                    
-        case 0:
-        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: RestaurantDetailIconTextCell.self), for: indexPath) as! RestaurantDetailIconTextCell
-//        cell.iconImageView.image = UIImage(systemName: "phone")?.withTintColor(.black, renderingMode: .alwaysOriginal)
-        cell.iconImageView.image = UIImage(named: "phone")
-        cell.shortTextLabel.text = restaurant.phone
-        cell.selectionStyle = .none
-                    
-        return cell
-        case 1:
-        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: RestaurantDetailIconTextCell.self), for: indexPath) as! RestaurantDetailIconTextCell
-//        cell.iconImageView.image = UIImage(systemName: "map")?.withTintColor(.black, renderingMode: .alwaysOriginal)
-        cell.iconImageView.image = UIImage(named: "map")
-        cell.shortTextLabel.text = restaurant.location
-        cell.selectionStyle = .none
-                    
-        return cell
-        case 2:
-        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: RestaurantDetailTextCell.self), for: indexPath) as! RestaurantDetailTextCell
-        cell.descriptionLabel.text = restaurant.summary
-        cell.selectionStyle = .none
         
-        return cell
-         
+        case 0:
+            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: RestaurantDetailIconTextCell.self), for: indexPath) as! RestaurantDetailIconTextCell
+            //        cell.iconImageView.image = UIImage(systemName: "phone")?.withTintColor(.black, renderingMode: .alwaysOriginal)
+            cell.iconImageView.image = UIImage(named: "phone")
+            cell.shortTextLabel.text = restaurant.phone
+            cell.selectionStyle = .none
+            
+            return cell
+        case 1:
+            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: RestaurantDetailIconTextCell.self), for: indexPath) as! RestaurantDetailIconTextCell
+            //        cell.iconImageView.image = UIImage(systemName: "map")?.withTintColor(.black, renderingMode: .alwaysOriginal)
+            cell.iconImageView.image = UIImage(named: "map")
+            cell.shortTextLabel.text = restaurant.location
+            cell.selectionStyle = .none
+            
+            return cell
+        case 2:
+            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: RestaurantDetailTextCell.self), for: indexPath) as! RestaurantDetailTextCell
+            cell.descriptionLabel.text = restaurant.summary
+            cell.selectionStyle = .none
+            
+            return cell
+            
         case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: RestaurantDetailSeparatorCell.self), for: indexPath) as! RestaurantDetailSeparatorCell
             cell.titleLabel.text = "HOW TO GET HERE"
@@ -60,34 +81,17 @@ class RestaurantDetailViewController: UIViewController, UITableViewDataSource, U
         case 4:
             let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: RestaurantDetailMapCell.self), for: indexPath) as! RestaurantDetailMapCell
             cell.selectionStyle = .none
-            cell.configure(location: restaurant.location)
+            if let restaurantLocation = restaurant.location {
+                cell.configure(location: restaurantLocation)
+            }
             
             return cell
             
         default:
-        fatalError("Failed to instantiate the table view cell for detail view controller")
+            fatalError("Failed to instantiate the table view cell for detail view controller")
         }
     }
     
-    
-    // MARK: - Table view lifecycle
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        navigationItem.largeTitleDisplayMode = .never
-        
-        // Configure header view
-        headerView.nameLabel.text = restaurant.name
-        headerView.typeLabel.text = restaurant.type
-        headerView.headerImageView.image = UIImage(named: restaurant.image)
-        headerView.heartImageView.isHidden = (restaurant.isVisited) ? false : true
-        if !restaurant.rating.isEmpty {
-            headerView.ratingImageView.image = UIImage(named: restaurant.rating)
-        }
-
-        tableView.delegate = self
-        tableView.dataSource = self
-    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showMap" {
@@ -109,10 +113,10 @@ class RestaurantDetailViewController: UIViewController, UITableViewDataSource, U
             self.restaurant.rating = rating
             self.headerView.ratingImageView.image = UIImage(named: rating)
         }
-
-    dismiss(animated: true, completion: nil)
+        
+        dismiss(animated: true, completion: nil)
     }
-
     
-
+    
+    
 }

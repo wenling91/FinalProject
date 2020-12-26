@@ -14,12 +14,14 @@ class ReviewViewController: UIViewController {
     
     @IBOutlet var rateButtons: [UIButton]!
     
-    var restaurant = Restaurant()
-
+    var restaurant: RestaurantMO!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        backgroundImageView.image = UIImage(named: restaurant.image)
+        
+        if let restaurantImage = restaurant.image {
+            backgroundImageView.image = UIImage(data: restaurantImage as Data)
+        }
         
         // Applying the blur effect
         let blurEffect = UIBlurEffect(style: .dark)
@@ -31,34 +33,34 @@ class ReviewViewController: UIViewController {
         
         let moveRightTransform = CGAffineTransform.init(translationX: 600, y: 0
         )
-
+        
         for rateButton in rateButtons {
             rateButton.transform = moveRightTransform
             rateButton.alpha = 0
         }
-
+        
     }
     
-//
-//    override func viewWillAppear(_ animated: Bool) {
-//        //without delay
-//        UIView.animate(withDuration: 2.0) {
-//            for rateButton in self.rateButtons {
-//                rateButton.transform = .identity
-//                rateButton.alpha = 1.0
-//            }
-//        }
-//    }
-
+    //
+    //    override func viewWillAppear(_ animated: Bool) {
+    //        //without delay
+    //        UIView.animate(withDuration: 2.0) {
+    //            for rateButton in self.rateButtons {
+    //                rateButton.transform = .identity
+    //                rateButton.alpha = 1.0
+    //            }
+    //        }
+    //    }
+    
     override func viewWillAppear(_ animated: Bool) {
         //with delay
         for index in 0...4 {
             UIView.animate(withDuration: 1.0, delay: 0.1+0.05*Double(index), options: [], animations:
-                {
-                    self.rateButtons[index].alpha = 1.0
-                    self.rateButtons[index].transform = .identity
-            }, completion: nil)
+                            {
+                                self.rateButtons[index].alpha = 1.0
+                                self.rateButtons[index].transform = .identity
+                            }, completion: nil)
         }
     }
-
+    
 }
