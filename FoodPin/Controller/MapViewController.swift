@@ -16,7 +16,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     var restaurant: RestaurantMO!
     
     let locationManager = CLLocationManager()
-    var currentPlacemark: CLPlacemark?
+    var currentLocation: MKUserLocation?
     var targetPlacemark: CLPlacemark?
     
     var currentTransportType = MKDirectionsTransportType.automobile
@@ -32,7 +32,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         if status == CLAuthorizationStatus.authorizedWhenInUse {
             mapView.showsUserLocation = true
         }
-        locationManager.delegate = self
+        //locationManager.delegate = self
         
         // Configure map view
         mapView.delegate = self
@@ -112,12 +112,13 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     
     @IBAction func showDirection(_ sender: Any) {
         
+        var currentPlacemark: CLPlacemark?
         //get the current location
         //locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
-        locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
-        locationManager.requestLocation()  //request once
+//        locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+//        locationManager.requestLocation()  //request once
         
-        guard let currentPlacemark = currentPlacemark,
+        guard let currentLocation = currentLocation?.location,
               let targetPlacemark = targetPlacemark else {
             return
         }
@@ -126,50 +127,61 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         
         // Set the source and destination of the route
         //directionRequest.source = MKMapItem.forCurrentLocation()
-        let sourcePlacemark = MKPlacemark(placemark: currentPlacemark)
-        directionRequest.source = MKMapItem(placemark: sourcePlacemark)
-        let destinationPlacemark = MKPlacemark(placemark: targetPlacemark)
-        directionRequest.destination = MKMapItem(placemark: destinationPlacemark)
-        directionRequest.transportType = currentTransportType
-        
-        // Calculate the direction
-        let directions = MKDirections(request: directionRequest)
-        
-        directions.calculate { (routeResponse, routeError) -> Void in
-            
-            guard let routeResponse = routeResponse else {
-                if let routeError = routeError {
-                    print("Error: \(routeError)")
+        //translate the current cooridinate to the address
+        CLGeocoder().reverseGeocodeLocation(currentLocation) { places, _ in
+            if let firstPlace = places?.first {
+                currentPlacemark = firstPlace
+                
+                let sourcePlacemark = MKPlacemark(placemark: currentPlacemark!)
+                directionRequest.source = MKMapItem(placemark: sourcePlacemark)
+                let destinationPlacemark = MKPlacemark(placemark: targetPlacemark)
+                directionRequest.destination = MKMapItem(placemark: destinationPlacemark)
+                directionRequest.transportType = self.currentTransportType
+                
+                // Calculate the direction
+                let directions = MKDirections(request: directionRequest)
+                
+                directions.calculate { (routeResponse, routeError) -> Void in
+                    
+                    guard let routeResponse = routeResponse else {
+                        if let routeError = routeError {
+                            print("Error: \(routeError)")
+                        }
+                        return
+                    }
+                    
+                    let route = routeResponse.routes[0]
+                    self.currentRoute = route
+                    self.mapView.removeOverlays(self.mapView.overlays)
+                    self.mapView.addOverlay(route.polyline, level: MKOverlayLevel.aboveRoads)
+                    
+                    let rect = route.polyline.boundingMapRect
+                    self.mapView.setRegion(MKCoordinateRegion.init(rect), animated: true)
                 }
-                return
             }
-            
-            let route = routeResponse.routes[0]
-            self.currentRoute = route
-            self.mapView.removeOverlays(self.mapView.overlays)
-            self.mapView.addOverlay(route.polyline, level: MKOverlayLevel.aboveRoads)
-            
-            let rect = route.polyline.boundingMapRect
-            self.mapView.setRegion(MKCoordinateRegion.init(rect), animated: true)
-        }        
+        }
         
+    }
+    
+    func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
+        currentLocation = userLocation
     }
     
     // MARK: - Location Manager Delegate methods
     
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Error happen: \(error.localizedDescription)")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.first {
-            //translate the cooridinate to the address
-            CLGeocoder().reverseGeocodeLocation(location) { places, _ in
-                if let firstPlace = places?.first {
-                    self.currentPlacemark = firstPlace
-                }
-            }
-        }
-    }
+//    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+//        print("Error happen: \(error.localizedDescription)")
+//    }
+//
+//    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+//        if let location = locations.first {
+//            //translate the cooridinate to the address
+//            CLGeocoder().reverseGeocodeLocation(location) { places, _ in
+//                if let firstPlace = places?.first {
+//                    self.currentPlacemark = firstPlace
+//                }
+//            }
+//        }
+//    }
     
 }

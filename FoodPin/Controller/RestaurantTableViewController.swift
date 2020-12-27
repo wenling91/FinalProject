@@ -266,7 +266,7 @@ class RestaurantTableViewController: UITableViewController, UISearchResultsUpdat
                 try fetchResultController.performFetch()
                 if let fetchedObjects = fetchResultController.fetchedObjects {
                     restaurants = fetchedObjects
-                    print("load data from database with \(restaurants.count) entries")
+                    //print("load data from database with \(restaurants.count) entries")
                 }
             } catch {
                 print(error)
