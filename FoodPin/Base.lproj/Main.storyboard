@@ -19,7 +19,7 @@
         </array>
     </customFonts>
     <scenes>
-        <!--Hotel Suggestion-->
+        <!--RestUp-->
         <scene sceneID="Aux-Jq-OMh">
             <objects>
                 <tableViewController id="u6K-Sn-9bi" customClass="RestaurantTableViewController" customModule="FoodPin" customModuleProvider="target" sceneMemberID="viewController">
@@ -92,7 +92,7 @@
                             <outlet property="delegate" destination="u6K-Sn-9bi" id="juU-fL-jpn"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Hotel Suggestion" id="CeX-Et-aed">
+                    <navigationItem key="navigationItem" title="RestUp" id="CeX-Et-aed">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="D0M-SB-ngR">
                             <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <connections>
