@@ -12,6 +12,7 @@ import MapKit
 class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate {
     
     @IBOutlet var mapView: MKMapView!
+    @IBOutlet var segmentedControl: UISegmentedControl!
     
     var restaurant: RestaurantMO!
     
@@ -70,7 +71,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         })
     }
     
-    
     // MARK: - Map View Delegate methods
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -81,24 +81,24 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         }
         
         // Reuse the annotation if possible
-        var annotationView: MKMarkerAnnotationView? = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView
-        
-        if annotationView == nil {
-            annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-            annotationView?.canShowCallout = true
+            var annotationView: MKMarkerAnnotationView? = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView
+            
+            if annotationView == nil {
+                annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+                annotationView?.canShowCallout = true
+            }
+            
+            //annotationView?.glyphText = "😋"
+            // annotationView?.markerTintColor = UIColor.orange
+            
+            let leftIconView = UIImageView(frame: CGRect.init(x: 0, y: 0, width: 53, height: 53))
+            if let restaurantImage = restaurant.image {
+                leftIconView.image = UIImage(data: restaurantImage as Data)
+            }
+            annotationView?.leftCalloutAccessoryView = leftIconView
+            
+            return annotationView
         }
-        
-        //annotationView?.glyphText = "😋"
-        // annotationView?.markerTintColor = UIColor.orange
-        
-        let leftIconView = UIImageView(frame: CGRect.init(x: 0, y: 0, width: 53, height: 53))
-        if let restaurantImage = restaurant.image {
-            leftIconView.image = UIImage(data: restaurantImage as Data)
-        }
-        annotationView?.leftCalloutAccessoryView = leftIconView
-        
-        return annotationView
-    }
     
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
@@ -109,60 +109,64 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         return renderer
     }
     
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        
+        performSegue(withIdentifier: "showSteps", sender: view)
+    }
     
     @IBAction func showDirection(_ sender: Any) {
-        
+
         var currentPlacemark: CLPlacemark?
         //get the current location
         //locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
 //        locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
 //        locationManager.requestLocation()  //request once
-        
+
         guard let currentLocation = currentLocation?.location,
               let targetPlacemark = targetPlacemark else {
             return
         }
-        
+
         let directionRequest = MKDirections.Request()
-        
+
         // Set the source and destination of the route
         //directionRequest.source = MKMapItem.forCurrentLocation()
         //translate the current cooridinate to the address
         CLGeocoder().reverseGeocodeLocation(currentLocation) { places, _ in
             if let firstPlace = places?.first {
                 currentPlacemark = firstPlace
-                
+
                 let sourcePlacemark = MKPlacemark(placemark: currentPlacemark!)
                 directionRequest.source = MKMapItem(placemark: sourcePlacemark)
                 let destinationPlacemark = MKPlacemark(placemark: targetPlacemark)
                 directionRequest.destination = MKMapItem(placemark: destinationPlacemark)
                 directionRequest.transportType = self.currentTransportType
-                
+
                 // Calculate the direction
                 let directions = MKDirections(request: directionRequest)
-                
+
                 directions.calculate { (routeResponse, routeError) -> Void in
-                    
+
                     guard let routeResponse = routeResponse else {
                         if let routeError = routeError {
                             print("Error: \(routeError)")
                         }
                         return
                     }
-                    
+
                     let route = routeResponse.routes[0]
                     self.currentRoute = route
                     self.mapView.removeOverlays(self.mapView.overlays)
                     self.mapView.addOverlay(route.polyline, level: MKOverlayLevel.aboveRoads)
-                    
+
                     let rect = route.polyline.boundingMapRect
                     self.mapView.setRegion(MKCoordinateRegion.init(rect), animated: true)
                 }
             }
         }
-        
+
     }
-    
+
     func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
         currentLocation = userLocation
     }
@@ -183,5 +187,68 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
 //            }
 //        }
 //    }
+    // MARK: - Action methods
     
+    @IBAction func showDirection(sender: UIButton) {
+        guard let targetPlacemark = targetPlacemark else {
+            return
+        }
+        
+        switch segmentedControl.selectedSegmentIndex {
+        case 0: currentTransportType = .automobile
+        case 1: currentTransportType = .walking
+        default: break
+        }
+        
+        segmentedControl.isHidden = false
+        
+        let directionRequest = MKDirections.Request()
+        
+        // Set the source and destination of the route
+        directionRequest.source = MKMapItem.forCurrentLocation()
+        let destinationPlacemark = MKPlacemark(placemark: targetPlacemark)
+        directionRequest.destination = MKMapItem(placemark: destinationPlacemark)
+        directionRequest.transportType = currentTransportType
+        
+        // Calculate the direction
+        let directions = MKDirections(request: directionRequest)
+        
+        directions.calculate { (routeResponse, routeError) -> Void in
+            
+            guard let routeResponse = routeResponse else {
+                if let routeError = routeError {
+                    print("Error: \(routeError)")
+                }
+                
+                return
+            }
+            
+            let route = routeResponse.routes[0]
+            self.currentRoute = route
+            self.mapView.removeOverlays(self.mapView.overlays)
+            self.mapView.addOverlay(route.polyline, level: MKOverlayLevel.aboveRoads)
+            
+            let rect = route.polyline.boundingMapRect
+            self.mapView.setRegion(MKCoordinateRegion.init(rect), animated: true)
+        }
+        
+        
+    }
+    
+    // MARK: - Navigation
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destinationViewController.
+        // Pass the selected object to the new view controller.
+        if segue.identifier == "showSteps" {
+            let routeTableViewController = segue.destination.children[0] as! RouteTableViewController
+            if let steps = currentRoute?.steps {
+                routeTableViewController.routeSteps = steps
+            }
+        }
+    }
+    
+    @IBAction func unwindToMap(segue: UIStoryboardSegue) {
+        
+    }
 }
