@@ -20,12 +20,18 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     var currentLocation: MKUserLocation?
     var targetPlacemark: CLPlacemark?
     
+    //let centerLocation = CLLocationCoordinate2D(latitude: 23.992630, longitude: 121.601139)
+    
     var currentTransportType = MKDirectionsTransportType.automobile
     var currentRoute: MKRoute?
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Hide the segmented control by default and register the event
+        segmentedControl.isHidden = true
+        segmentedControl.addTarget(self, action: #selector(showDirection), for: .valueChanged)
         
         // Request for a user's authorization for location services
         locationManager.requestWhenInUseAuthorization()
@@ -96,6 +102,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
                 leftIconView.image = UIImage(data: restaurantImage as Data)
             }
             annotationView?.leftCalloutAccessoryView = leftIconView
+            annotationView?.rightCalloutAccessoryView = UIButton(type: UIButton.ButtonType.detailDisclosure)
             
             return annotationView
         }
@@ -233,6 +240,18 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         }
         
         
+    }
+    
+    // MARK: - Choose Map Type
+    @IBAction func selectType(_ sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex {
+        case 0:
+            mapView.mapType = .standard
+        case 1:
+            mapView.mapType = .satellite
+        default:
+            break
+        }
     }
     
     // MARK: - Navigation
