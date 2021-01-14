@@ -19,7 +19,7 @@ class WeatherViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        getForecast(location: "Taibao")
+        getForecast(location: "Hualien")
     }
     
     func getForecast(location: String) {
